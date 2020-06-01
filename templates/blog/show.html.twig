@@ -1,14 +1,43 @@
 {% extends 'base.html.twig' %}
 
+{% form_theme formComment 'bootstrap_4_layout.html.twig' %}
+
 {% block body %}
-  <article>
-    <h2>{{ article.title }} </h2>
-    <div class="metadata">
-      Ecrit le {{article.createdAt | date('d/m/Y') }} à {{ article.createdAt | date('H:i')}} dans la catégorie Politique
-    </div>
-    <div class="content">
-      <img src="{{article.image}}" alt="" />
-      {{ article.content | raw}}
-    </div>
-  </article>
+	<article>
+		<h2>{{ article.title }}</h2>
+		<div class="metadata">
+			Ecrit le
+			{{article.createdAt | date('d/m/Y') }}
+			à
+			{{ article.createdAt | date('H:i')}}
+			dans la catégorie
+			{{ article.category.title }}
+		</div>
+		<div class="content">
+			<img src={{ article.image }} alt=""/>
+			{{ article.content | raw }}
+		</div>
+	</article>
+	<section id="commentaires">
+		{% for comment in article.comments %}
+			<div class="comment">
+				<div class="row">
+					{{ comment.author }}
+					(<small>{{comment.createdAt | date('d/m/Y à H:i')}}
+					</small>)
+				</div>
+				<div class="col">
+					{{ comment.content | raw }}
+				</div>
+			</div>
+        {% endfor %}
+        
+        <div class="container">
+            {{ form_start(formComment) }}
+            {{ form_row( formComment.author, { 'attr': { 'placeholder': 'Votre nom'}} ) }}
+            {{ form_row(formComment.content, { 'attr': { 'placeholder': 'Ecrivez votre commentaire ici' }} ) }}
+            <button class="btn btn-success">Envoyer</button>
+            {{ form_end(formComment) }}
+        </div>
+	</section>
 {% endblock %}

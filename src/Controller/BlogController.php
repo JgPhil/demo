@@ -6,12 +6,15 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use App\Entity\Article;
+use App\Entity\Comment;
 use App\Repository\ArticleRepository;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use App\Form\ArticleType;
+use App\Form\CommentType;
+
 class BlogController extends AbstractController
 {
     /**
@@ -33,8 +36,7 @@ class BlogController extends AbstractController
     public function home()
     {
         return $this->render('blog/home.html.twig', [
-            'title' => "Bienvenue les amis",
-            'age' => 31
+            'title' => "Bienvenue les amis"
         ]);
     }
 
@@ -47,7 +49,7 @@ class BlogController extends AbstractController
         if (!$article) {
             $article = new Article();
         }
-/* 
+        /* 
         $form = $this->createFormBuilder($article)
             ->add('title')
             ->add('content')
@@ -77,15 +79,29 @@ class BlogController extends AbstractController
         ]);
     }
 
+
     /**
      * @Route("/blog/{id}", name="blog_show")
      */
-    public function show(ArticleRepository $repo, $id)
+    public function show(ArticleRepository $repo, $id, Request $request, EntityManagerInterface $manager)
     {
         //$repo = $this->getDoctrine()->getRepository(Article::class);
         $article = $repo->find($id);
+        $comment = new Comment;
+
+        $form = $this->createForm(CommentType::class, $comment);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $comment->setCreatedAt(new \DateTime());
+
+            $manager->persist($comment);
+            $manager->flush();
+        }
         return $this->render('blog/show.html.twig', [
-            'article' => $article
+            'article' => $article,
+            'formComment' => $form->createView()
         ]);
     }
 }

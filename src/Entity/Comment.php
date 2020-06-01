@@ -19,11 +19,16 @@ class Comment
 
     /**
      * @ORM\Column(type="string", length=255)
+     * 
      */
     private $author;
 
     /**
      * @ORM\Column(type="text")
+     * min = 10,
+     * max = 255,
+     * minMessage = "Votre contenu est trop court",
+     * maxMessage = "Votre contenu est trop long")
      */
     private $content;
 
