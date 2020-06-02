@@ -98,6 +98,7 @@ class BlogController extends AbstractController
             $comment->setArticle($article);
             $manager->persist($comment);
             $manager->flush();
+            return $this->redirectToRoute('blog_show', ['id' => $article->getId()]);
         }
         return $this->render('blog/show.html.twig', [
             'article' => $article,
